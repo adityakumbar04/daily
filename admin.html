@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { padding: 18px; font-family: Inter, system-ui, Arial, sans-serif; }
+    .grid { display:flex; gap:16px; flex-wrap:wrap; margin-bottom:18px; }
+    .card { background:#fff; border-radius:8px; padding:16px; box-shadow:0 1px 6px rgba(0,0,0,0.08); min-width:160px; flex:1 1 180px }
+    .card h3 { margin:0 0 8px; font-size:14px; color:#666 }
+    .card p { margin:0; font-size:22px; font-weight:600 }
+    .table-wrap { overflow:auto; background:#fff; padding:12px; border-radius:8px; box-shadow:0 1px 6px rgba(0,0,0,0.06) }
+    table { width:100%; border-collapse:collapse; min-width:640px }
+    th, td { text-align:left; padding:10px 8px; border-bottom:1px solid #eee }
+    th { background:#fafafa; font-weight:700 }
+    .muted { color:#666; font-size:13px }
+    .center { text-align:center }
+    .hidden { display:none }
+    @media (max-width:600px) { .grid { flex-direction:column } }
+  </style>
+</head>
+<body>
+
+  <h1>Admin Dashboard</h1>
+  <div id="locked" class="muted">Verifying access...</div>
+
+  <div id="dashboard" class="hidden">
+    <div class="grid" id="stats">
+      <div class="card">
+        <h3>Total Members</h3>
+        <p id="totalMembers">—</p>
+      </div>
+      <div class="card">
+        <h3>Average Performance %</h3>
+        <p id="avgPerformance">—</p>
+      </div>
+      <div class="card">
+        <h3>Highest Score</h3>
+        <p id="highestScore">—</p>
+      </div>
+      <div class="card">
+        <h3>Lowest Score</h3>
+        <p id="lowestScore">—</p>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <h3>Leaderboard</h3>
+      <table id="leaderboard">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Score</th>
+            <th>Percentage</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

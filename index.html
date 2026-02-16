@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Daily Routine</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Welcome/Name Screen (shown first) -->
+  <div id="welcome" class="welcome-screen" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+    <div class="welcome-card">
+      <h1 id="welcomeTitle">Assalamu Alaikum</h1>
+      <p class="welcome-subtitle">Please enter your name to continue</p>
+      <div class="name-input-group">
+        <input 
+          type="text" 
+          id="nameInput" 
+          class="name-input" 
+          placeholder="Your Name" 
+          aria-label="Enter your name"
+          autocomplete="off"
+        />
+        <button id="nameSubmitBtn" class="btn-enter" aria-label="Continue">
+          Enter →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <main id="app" class="hidden">
+    <header class="topbar" role="banner">
+      <h1 class="brand">My Day</h1>
+      <p class="user-greeting" id="userGreeting"></p>
+    </header>
+
+    <section id="questions" class="questions" aria-live="polite"></section>
+
+    <div class="footer-actions">
+      <button id="submitBtn" class="btn submit-btn" aria-label="Submit answers">SUBMIT</button>
+    </div>
+  </main>
+
+  <!-- Summary modal (hidden until submit) -->
+  <div id="summary" class="summary hidden" role="dialog" aria-modal="true" aria-labelledby="summaryTitle">
+    <div class="summary-card">
+      <h2 id="summaryTitle">Your Answers</h2>
+      <div id="summaryList" class="summary-list"></div>
+      <div class="summary-actions">
+        <button id="editBtn" class="btn outline">Edit</button>
+        <button id="confirmBtn" class="btn primary">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-(() => {
+﻿(() => {
   const TOKEN_KEY = 'adminToken';
   const USER_KEY = 'adminUser';
   const NUM_QUESTIONS = 18;
@@ -159,7 +159,7 @@
     days.forEach(day => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td>${escapeHtml(day.date || '—')}</td>
+        <td>${escapeHtml(day.date || 'â€”')}</td>
         <td class="right">${escapeHtml(String(day.total ?? 0))}</td>
         ${Array.from({ length: NUM_QUESTIONS }).map((_, i) => {
           const yes = (day.yes && day.yes[i]) ? day.yes[i] : 0;
@@ -171,7 +171,26 @@
       tbody.appendChild(tr);
     });
   }
+  function renderYesRateRow(overall) {
+    const yesRateRow = document.getElementById('yesRateRow');
+    if (!yesRateRow) return;
 
+    const ths = yesRateRow.querySelectorAll('th');
+    if (!ths || ths.length < NUM_QUESTIONS + 2) return;
+
+    const totalResponses = overall && typeof overall.totalResponses === 'number' ? overall.totalResponses : 0;
+    const yesByQ = (overall && Array.isArray(overall.yesByQuestion)) ? overall.yesByQuestion : Array(NUM_QUESTIONS).fill(0);
+
+    ths[0].textContent = 'Yes Rate';
+    ths[1].textContent = totalResponses ? 'per question' : '—';
+
+    for (let i = 0; i < NUM_QUESTIONS; i++) {
+      const yes = Number(yesByQ[i] || 0);
+      const pct = totalResponses ? Math.round((yes / totalResponses) * 100) : 0;
+      ths[i + 2].textContent = totalResponses ? `${pct}%` : '—';
+      ths[i + 2].title = totalResponses ? `Q${i + 1}: ${yes}/${totalResponses} (${pct}%)` : '';
+    }
+  }
   function renderOverview(overall, start, end) {
     const totalResponses = overall && typeof overall.totalResponses === 'number' ? overall.totalResponses : 0;
     const yesTotal = overall && typeof overall.yesTotal === 'number' ? overall.yesTotal : 0;
@@ -179,7 +198,7 @@
     const yesRate = answerTotal ? Math.round((yesTotal / answerTotal) * 100) : 0;
 
     document.getElementById('totalMembers').innerText = totalResponses.toLocaleString();
-    document.getElementById('avgPerformance').innerText = answerTotal ? `${yesRate}%` : '—';
+    document.getElementById('avgPerformance').innerText = answerTotal ? `${yesRate}%` : 'â€”';
 
     const yesByQ = (overall && Array.isArray(overall.yesByQuestion)) ? overall.yesByQuestion : Array(NUM_QUESTIONS).fill(0);
     const denom = totalResponses || 0;
@@ -193,19 +212,20 @@
     });
 
     if (denom === 0) {
-      document.getElementById('highestScore').innerText = '—';
-      document.getElementById('lowestScore').innerText = '—';
+      document.getElementById('highestScore').innerText = 'â€”';
+      document.getElementById('lowestScore').innerText = 'â€”';
     } else {
       document.getElementById('highestScore').innerText = `Q${maxI + 1} (${Math.round(rates[maxI] * 100)}%)`;
       document.getElementById('lowestScore').innerText = `Q${minI + 1} (${Math.round(rates[minI] * 100)}%)`;
     }
 
-    setStatus(appStatus, `Report ${start} → ${end}`);
+    renderYesRateRow(overall);
+    setStatus(appStatus, `Report ${start} â†’ ${end}`);
   }
 
   function updateTableMeta(visibleCount, totalCount) {
     if (!tableMeta) return;
-    tableMeta.textContent = `${visibleCount.toLocaleString()} days shown • ${totalCount.toLocaleString()} days total`;
+    tableMeta.textContent = `Total ${visibleCount.toLocaleString()} days shown`;
   }
 
   function toCsvValue(v) {
@@ -216,22 +236,27 @@
   }
 
   function exportCsv(days) {
+    const delimiter = ',';
     const header = ['Date', 'Total', ...Array.from({ length: NUM_QUESTIONS }).map((_, i) => `Q${i + 1} Yes/Total`)];
-    const lines = [header.map(toCsvValue).join(',')];
+    const lines = ['sep=,', header.map(toCsvValue).join(delimiter)];
+
     days.forEach(day => {
       const row = [
-        day.date,
-        day.total,
+        day && day.date ? `="${day.date}"` : '',
+        day && typeof day.total === 'number' ? day.total : 0,
         ...Array.from({ length: NUM_QUESTIONS }).map((_, i) => {
           const yes = (day.yes && day.yes[i]) ? day.yes[i] : 0;
           const total = day.total || 0;
-          return `${yes}/${total}`;
+          // Keep Yes/Total as text in Excel (avoid auto date conversion like 3/3 -> 03-Mar)
+          return `="${yes}/${total}"`;
         })
       ];
-      lines.push(row.map(toCsvValue).join(','));
+      lines.push(row.map(toCsvValue).join(delimiter));
     });
 
-    const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+    // BOM + CRLF helps Excel parse UTF-8 CSV into proper columns.
+    const csvText = `\uFEFF${lines.join('\r\n')}`;
+    const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -248,7 +273,7 @@
   }
 
   async function refreshAll() {
-    setStatus(appStatus, 'Loading…');
+    setStatus(appStatus, 'Loadingâ€¦');
     refreshBtn.disabled = true;
     exportBtn.disabled = true;
     try {
@@ -267,7 +292,7 @@
       if (msg.startsWith('<!DOCTYPE html>') || msg.includes('Cannot GET /api/report')) {
         msg = 'Report endpoint not found. Restart the backend (`npm start`) to load the latest routes.';
       } else if (raw.length > 220) {
-        msg = raw.slice(0, 220) + '…';
+        msg = raw.slice(0, 220) + 'â€¦';
       } else if (!msg) {
         msg = 'Unknown error';
       }
@@ -326,3 +351,5 @@
     if (!(location && location.protocol === 'file:')) setStatus(loginStatus, '');
   }
 })();
+
+

@@ -103,7 +103,7 @@ body{
 .play-btn:active{transform:scale(0.98)}
 
 .question-text{
-  font-size:20px;
+  font-size:40px;
   font-weight:700;
   line-height:1.1;
   color:var(--text);

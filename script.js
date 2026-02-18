@@ -201,6 +201,29 @@ function closeSummary() {
   document.getElementById('summary').classList.add('hidden');
 }
 
+function showThankYouAndRedirect() {
+  const summaryTitle = document.getElementById('summaryTitle');
+  const summaryList = document.getElementById('summaryList');
+  const editBtn = document.getElementById('editBtn');
+  const confirmBtn = document.getElementById('confirmBtn');
+
+  summaryTitle.innerText = 'Thank You!';
+  summaryList.innerHTML = `
+    <div class="summary-item">
+      <div class="q">Your response has been saved successfully.</div>
+      <div class="a">Redirecting to home...</div>
+    </div>
+  `;
+
+  editBtn.classList.add('hidden');
+  confirmBtn.innerText = 'Redirecting...';
+  confirmBtn.disabled = true;
+
+  setTimeout(() => {
+    window.location.href = '/';
+  }, 2500);
+}
+
 // ====================== INIT ======================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -277,7 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const result = await response.json();
       console.log('Data sent successfully:', result);
-      confirmBtn.innerText = 'Saved';
+      showThankYouAndRedirect();
     } catch (err) {
       console.error('Submit error:', err);
       confirmBtn.innerText = 'Save Failed';
@@ -285,8 +308,6 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('Error: ' + err.message);
       return;
     }
-
-    setTimeout(closeSummary, 1600);
   });
 
 });
